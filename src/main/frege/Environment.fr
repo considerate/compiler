@@ -1,0 +1,20 @@
+module punkt0.Environment where
+import Data.HashMap
+import punkt0.parser.Grammar
+
+-- | Simulate HashSet using a HashMap with values as unit ()
+type HashSet a = HashMap a ()
+
+add :: Eq a => a -> HashSet a -> HashSet a
+add x = insert x ()
+
+type Environment = HashMap String VarDeclaration
+type LocalScope = HashSet String
+
+var :: (Environment, LocalScope) -> VarDeclaration -> (Environment, LocalScope)
+var (env,scope) v = if member v.name scope
+	then error "Variable already defined."
+	else (insert v.name v env, add v.name scope)
+
+declVars :: Environment -> [VarDeclaration] -> Environment
+declVars env vs = fst $ foldl var (env,empty) vs
