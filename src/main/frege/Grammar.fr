@@ -4,6 +4,7 @@ import parser.Parser
 import punkt0.Positioned
 import lexer.Lexer(Lexeme())
 import punkt0.lexer.Tokens as Tokens(Token(), getIdentifierString, getLiteral, isLiteral)
+import punkt0.TypeCheck (TType)
 
 type Lex = Lexeme Token
 
@@ -213,6 +214,7 @@ data Expression
     | While {predicate :: Expression, body :: Expression, pos :: Position}
     | Println {expr :: Expression, pos :: Position}
     | Assign {var :: Identifier, expr :: Expression, pos :: Position}
+    | TypedExpr TType Expression
 derive Eq Expression
 derive Show Expression
 

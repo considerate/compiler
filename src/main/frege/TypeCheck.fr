@@ -122,12 +122,12 @@ getClass environment obj pos
         (pure . fst)
         (lookup obj (environment.classes))
 
-typeExpression :: Environment -> Expression -> TypeCheck TType
-typeExpression _ (LitInt{}) = pure TInt
-typeExpression _ (LitString{}) = pure TString
-typeExpression _ (LitTrue{}) = pure TBool
-typeExpression _ (LitFalse{}) = pure TBool
-typeExpression _ (LitNull{}) = pure TUnit
+typeExpression :: Environment -> Expression -> TypeCheck Expression
+typeExpression _ t@(LitInt{}) = pure TypedExpr TInt t
+typeExpression _ t@(LitString{}) = pure TypedExpr TString t
+typeExpression _ t@(LitTrue{}) = pure TypedExpr TBool t
+typeExpression _ t@(LitFalse{}) = pure TypedExpr TBool t
+typeExpression _ t@(LitNull{}) = pure TypedExpr TUnit t
 typeExpression environment (New{obj, pos}) = getClass environment (obj.str) pos
 typeExpression environment (Identifier{id})
     = typeVar environment id
