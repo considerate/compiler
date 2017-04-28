@@ -1,0 +1,47 @@
+module punkt0.Symbol where
+
+import punkt0.parser.Grammar
+
+class Named n where
+	tag :: Int -> n -> (Int,n)
+
+instance Named Identifier where
+	tag i (ID str pos) = (i+1,Symbol i str pos)
+
+instance Named VarDeclaration where
+	tag i vd = (i+1,vd.{name <- (snd . tag i)})
+
+instance Named MethodDeclaration where
+	tag i md = (i+1,md.{name <- (snd . tag i)})
+
+instance Named a => Named [a] where
+	tag i xs = foldr symOne (i,[]) xs
+		where
+			symOne x (i', lst) = let
+				(i'', x') = tag i' x
+				in (i'', x' : lst)
+instance Named ClassDeclaration where
+	tag i cd = (i''',cd.{name=name',vars=vars',methods=methods'})
+		where
+			(i',name') = tag i cd.name
+			(i'',vars') = tag i' cd.vars
+			(i''', methods') = tag i'' cd.methods
+
+instance Named MainDeclaration where
+	tag i md = (i'',md.{name=name',vars=vars'})
+		where
+			(i',name') = tag i md.name
+			(i'',vars') = tag i' md.vars
+
+tagged :: Program -> Program
+tagged (Program cds md pos) = Program cds' md' pos
+	where
+		(i, cds') = tag 0 cds
+		(_,md') = tag i md
+
+--instance Named Program where
+--	tag i (Program cds md pos) = (i'', Program cds' md' pos)
+--		where
+--			(i', cds') = tag 0 cds
+--			(i'',md') = tag i' md
+
