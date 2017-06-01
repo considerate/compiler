@@ -16,3 +16,14 @@ derive Eq TType
 class Typed g where
     typeOf :: g -> TType
 
+genAbstractName :: TType -> String
+genAbstractName (TMethod (_,t)) = genAbstractName t --We're really only interested in return type.
+genAbstractName TBottomRef = error "Cannot generate abstract class for null return."
+genAbstractName (TArrow arg ret) = "$"++ genAbstractName arg ++ genAbstractName ret
+genAbstractName concrete = case concrete of
+    TBool -> "_Bool"
+    TInt -> "_Int"
+    TString -> "_String"
+    TUnit -> "_Unit"
+    TClass str -> "_" ++ str
+    TAnyRef -> "_Any"
